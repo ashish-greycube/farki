@@ -9,33 +9,33 @@ import frappe
 from frappe import _
 from werkzeug.wrappers import Response
 
-from woocommerce_fusion.tasks.sync_sales_orders import run_sales_order_sync
-from woocommerce_fusion.woocommerce.woocommerce_api import (
-	WC_RESOURCE_DELIMITER,
-	parse_domain_from_url,
-)
+# from woocommerce_fusion.tasks.sync_sales_orders import run_sales_order_sync
+# from woocommerce_fusion.woocommerce.woocommerce_api import (
+# 	WC_RESOURCE_DELIMITER,
+# 	parse_domain_from_url,
+# )
 
 
-def validate_request() -> Tuple[bool, Optional[HTTPStatus], Optional[str]]:
-	# Get relevant WooCommerce Server
-	try:
-		webhook_source_url = frappe.get_request_header("x-wc-webhook-source", "")
-		wc_server = frappe.get_doc("WooCommerce Server", parse_domain_from_url(webhook_source_url))
-	except Exception:
-		return False, HTTPStatus.BAD_REQUEST, _("Missing Header")
+# def validate_request() -> Tuple[bool, Optional[HTTPStatus], Optional[str]]:
+# 	# Get relevant WooCommerce Server
+# 	try:
+# 		webhook_source_url = frappe.get_request_header("x-wc-webhook-source", "")
+# 		wc_server = frappe.get_doc("WooCommerce Server", parse_domain_from_url(webhook_source_url))
+# 	except Exception:
+# 		return False, HTTPStatus.BAD_REQUEST, _("Missing Header")
 
-	# Validate secret
-	sig = base64.b64encode(
-		hmac.new(wc_server.secret.encode("utf8"), frappe.request.data, hashlib.sha256).digest()
-	)
-	# if (
-	# 	frappe.request.data
-	# 	and not sig == frappe.get_request_header("x-wc-webhook-signature", "").encode()
-	# ):
-	# 	return False, HTTPStatus.UNAUTHORIZED, _("Unauthorized")
+# 	# Validate secret
+# 	sig = base64.b64encode(
+# 		hmac.new(wc_server.secret.encode("utf8"), frappe.request.data, hashlib.sha256).digest()
+# 	)
+# 	# if (
+# 	# 	frappe.request.data
+# 	# 	and not sig == frappe.get_request_header("x-wc-webhook-signature", "").encode()
+# 	# ):
+# 	# 	return False, HTTPStatus.UNAUTHORIZED, _("Unauthorized")
 
-	frappe.set_user(wc_server.creation_user)
-	return True, None, None
+# 	frappe.set_user(wc_server.creation_user)
+# 	return True, None, None
 
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
