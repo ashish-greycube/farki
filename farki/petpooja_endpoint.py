@@ -38,7 +38,8 @@ from werkzeug.wrappers import Response
 # 	return True, None, None
 
 
-@frappe.whitelist(allow_guest=True, methods=["POST"])
+@frappe.whitelist(allow_guest=False, methods=["POST"])
+# @frappe.whitelist()
 def order_created(*args, **kwargs):
 	# valid, status, msg = validate_request()
 	# if not valid:
@@ -61,6 +62,7 @@ def order_created(*args, **kwargs):
 		# 	f"{parse_domain_from_url(webhook_source_url)}{WC_RESOURCE_DELIMITER}{order['id']}"
 		# )
 		frappe.enqueue(create_log, queue="long",request_data=request_data)
+		# create_log(request_data)
 		return Response(status=HTTPStatus.OK)
 	else:
 		return Response(response=_("Event not supported"), status=HTTPStatus.BAD_REQUEST)
