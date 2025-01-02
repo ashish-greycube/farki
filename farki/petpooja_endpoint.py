@@ -16,41 +16,36 @@ from werkzeug.wrappers import Response
 # )
 
 
-# def validate_request() -> Tuple[bool, Optional[HTTPStatus], Optional[str]]:
-# 	# Get relevant WooCommerce Server
-# 	try:
-# 		webhook_source_url = frappe.get_request_header("x-wc-webhook-source", "")
-# 		wc_server = frappe.get_doc("WooCommerce Server", parse_domain_from_url(webhook_source_url))
-# 	except Exception:
-# 		return False, HTTPStatus.BAD_REQUEST, _("Missing Header")
-
-# 	# Validate secret
-# 	sig = base64.b64encode(
-# 		hmac.new(wc_server.secret.encode("utf8"), frappe.request.data, hashlib.sha256).digest()
-# 	)
-# 	# if (
-# 	# 	frappe.request.data
-# 	# 	and not sig == frappe.get_request_header("x-wc-webhook-signature", "").encode()
-# 	# ):
-# 	# 	return False, HTTPStatus.UNAUTHORIZED, _("Unauthorized")
-
-# 	frappe.set_user(wc_server.creation_user)
-# 	return True, None, None
+def validate_request(request_data) -> Tuple[bool, Optional[HTTPStatus], Optional[str]]:
+	# Get relevant WooCommerce Server
+	try:	
+	
+		farki_settings = frappe.get_doc('Farki Settings', 'Farki Settings')
+		farki_settings_secret=farki_settings.secret.encode("utf8")
+		payload_token=request_data.get('token').encode("utf8")
+		print(farki_settings_secret==payload_token,farki_settings_secret,payload_token)
+		if payload_token and farki_settings_secret==payload_token:
+			frappe.set_user(farki_settings.creation_user)
+			return True, None, None
+		else:
+			return False, HTTPStatus.UNAUTHORIZED, _("Unauthorized")
+		
+	except Exception:
+		return False, HTTPStatus.BAD_REQUEST, _("Something went wrong")
 
 
-@frappe.whitelist(allow_guest=False, methods=["POST"])
-# @frappe.whitelist()
+@frappe.whitelist(allow_guest=True, methods=["POST"])
 def order_created(*args, **kwargs):
-	# valid, status, msg = validate_request()
-	# if not valid:
-	# 	return Response(response=msg, status=status)
-
 	if frappe.request and frappe.request.data:
 		try:
 			request_data = json.loads(frappe.request.data)
+			valid, status, msg = validate_request(request_data)
+			if not valid:
+				return Response(response=msg, status=status)			
 		except ValueError:
+			event="failed"
 			# woocommerce returns 'webhook_id=value' for the first request which is not JSON
-			request_data = frappe.request.data
+			# request_data = frappe.request.data
 		# event = frappe.get_request_header("x-wc-webhook-event")
 		event = "created"
 	else:
