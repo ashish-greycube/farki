@@ -9,7 +9,14 @@
   "enable",
   "creation_user",
   "secret",
-  "view_webhook_config"
+  "view_webhook_config",
+  "invoice_defaults_tab",
+  "customer_defaults_section",
+  "default_swiggy_customer",
+  "column_break_kjeh",
+  "default_zomato_customer",
+  "mode_of_payment_section",
+  "phone_pe"
  ],
  "fields": [
   {
@@ -41,12 +48,49 @@
    "fieldtype": "Link",
    "label": "Creation User",
    "options": "User"
+  },
+  {
+   "fieldname": "default_swiggy_customer",
+   "fieldtype": "Link",
+   "label": "Default Swiggy Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "default_zomato_customer",
+   "fieldtype": "Link",
+   "label": "Default Zomato Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "invoice_defaults_tab",
+   "fieldtype": "Tab Break",
+   "label": "Invoice Defaults"
+  },
+  {
+   "fieldname": "mode_of_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Mode Of Payments"
+  },
+  {
+   "fieldname": "phone_pe",
+   "fieldtype": "Link",
+   "label": "Phone Pe",
+   "options": "Mode of Payment"
+  },
+  {
+   "fieldname": "customer_defaults_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Defaults"
+  },
+  {
+   "fieldname": "column_break_kjeh",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-02 13:17:28.871978",
+ "modified": "2025-01-06 17:29:23.328192",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Farki Settings",

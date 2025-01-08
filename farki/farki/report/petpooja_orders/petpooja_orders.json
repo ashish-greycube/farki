@@ -39,6 +39,12 @@
    "width": 150
   },
   {
+   "fieldname": "CustomPaymentType",
+   "fieldtype": "Data",
+   "label": "CustomPaymentType",
+   "width": 150
+  },
+  {
    "fieldname": "TotalAmount",
    "fieldtype": "Data",
    "label": "TotalAmount",
@@ -74,16 +80,16 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 2,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-01-06 09:20:38.717565",
+ "modified": "2025-01-06 17:07:19.176123",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "PetPooja Orders",
  "owner": "Administrator",
  "prepared_report": 0,
- "query": "SELECT \n    name, \n    status,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.orderID'),'\"','')OrderID,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.status'),'\"','')OrderStatus,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.sub_order_type'),'\"','')SubOrderType,    \n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.payment_type'),'\"','')PaymentType,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.total'),'\"','') TotalAmount,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.order_from'),'\"','') OrderFrom,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.order_type'),'\"','') OrderType,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.created_on'),'\"','') createdOn,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Restaurant.res_name'),'\"','') Branch\nFROM `tabPet Pooja Log`\norder by createdon desc;",
+ "query": "SELECT \n    name, \n    status,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.orderID'),'\"','')OrderID,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.status'),'\"','')OrderStatus,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.sub_order_type'),'\"','')SubOrderType,    \n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.payment_type'),'\"','')PaymentType,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.custom_payment_type'),'\"','')CustomPaymentType,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.total'),'\"','') TotalAmount,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.order_from'),'\"','') OrderFrom,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.order_type'),'\"','') OrderType,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Order.created_on'),'\"','') createdOn,\n    REPLACE(JSON_EXTRACT(data,'$.properties.Restaurant.res_name'),'\"','') Branch\nFROM `tabPet Pooja Log`\norder by createdon desc;",
  "ref_doctype": "Pet Pooja Log",
  "report_name": "PetPooja Orders",
  "report_type": "Query Report",
