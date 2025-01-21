@@ -16,7 +16,10 @@
   "column_break_kjeh",
   "default_zomato_customer",
   "mode_of_payment_section",
-  "phone_pe"
+  "phone_pe",
+  "general_defaults_tab",
+  "place_of_supply",
+  "pp_vs_erpnext_mode_of_payment_mapping"
  ],
  "fields": [
   {
@@ -85,12 +88,30 @@
   {
    "fieldname": "column_break_kjeh",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "general_defaults_tab",
+   "fieldtype": "Tab Break",
+   "label": "General Defaults"
+  },
+  {
+   "default": "24-Gujarat",
+   "fieldname": "place_of_supply",
+   "fieldtype": "Data",
+   "label": "Place of Supply"
+  },
+  {
+   "description": "Note:<b>Applicable only if Mode of Payment is received combined for all the outlets<b></b></b>",
+   "fieldname": "pp_vs_erpnext_mode_of_payment_mapping",
+   "fieldtype": "Table",
+   "label": "PP vs ERPNext Mode of Payment Mapping",
+   "options": "PP vs ERPNext Mode of Payment Mapping"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-06 17:29:23.328192",
+ "modified": "2025-01-17 11:23:11.598547",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Farki Settings",

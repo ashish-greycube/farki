@@ -9,7 +9,7 @@
  "field_order": [
   "user",
   "params",
-  "status",
+  "log_status",
   "time_elapsed",
   "data",
   "traceback",
@@ -18,7 +18,10 @@
   "method",
   "endpoint",
   "response",
-  "error"
+  "error",
+  "section_break_hmdh",
+  "invoice_status",
+  "invoice_error"
  ],
  "fields": [
   {
@@ -34,15 +37,6 @@
    "fieldtype": "Code",
    "label": "Parameters",
    "options": "JSON",
-   "read_only": 1
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Status",
-   "options": "Success\nError",
    "read_only": 1
   },
   {
@@ -103,12 +97,42 @@
    "fieldtype": "Text",
    "label": "Error",
    "read_only": 1
+  },
+  {
+   "fieldname": "log_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Log Status",
+   "options": "Success\nError",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_hmdh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Not processed",
+   "fieldname": "invoice_status",
+   "fieldtype": "Select",
+   "label": "Invoice Status",
+   "options": "Not processed\nCreated\nCancelled\nDuplicate\nError"
+  },
+  {
+   "fieldname": "invoice_error",
+   "fieldtype": "Code",
+   "label": "Invoice Error"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-12-30 09:43:14.550320",
+ "links": [
+  {
+   "link_doctype": "Sales Invoice",
+   "link_fieldname": "custom_pet_pooja_log_id"
+  }
+ ],
+ "modified": "2025-01-20 10:23:31.421747",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Pet Pooja Log",
