@@ -96,6 +96,7 @@ class PetPoojaLog(Document):
 		order_item_details = properties.get('OrderItem')
 		print(order_item_details,"=====---------------------",len(order_item_details),type(order_item_details))
 		for item in order_item_details:
+			item_rate_as_per_selling_price_list=0
 			item_row = sales_invoice_doc.append('items', {})
 			item_row.item_code = item.get('sap_code')
 			item_row.qty = item.get('quantity')
@@ -104,13 +105,19 @@ class PetPoojaLog(Document):
 			if order_details.get('status') == 'Complimentary':
 				item_row.rate = 0
 			else:
-				item_row.rate = item_price
-			# item_row.amount = item.get('amount')
+				item_rate_as_per_selling_price_list=item_price
+				discount_precision=2
+				pp_item_discount=flt(item.get('discount'),discount_precision)
+				if pp_item_discount>0:
+					item_row.discount_amount = pp_item_discount/ item.get('quantity')
+					item_row.rate_with_margin=item_rate_as_per_selling_price_list
+					item_row.rate = flt(item_rate_as_per_selling_price_list - item_row.discount_amount ,discount_precision)
+					item_row.discount_percentage = 100 * flt(item_row.discount_amount) / flt(item_rate_as_per_selling_price_list)
+				else:
+					item_row.rate = item_rate_as_per_selling_price_list
 			print(item.get('discount'),"====item.get('discount')",type(item.get('discount')))
 			item_row.cost_center = cost_center_doc.name
 			item_row.warehouse = cost_center_doc.custom_warehouse
-			item_row.discount_amount = flt(item.get('discount') / item.get('quantity'),2)
-			item_row.discount_percentage = (flt(item.get('discount') / item.get('quantity'),2) * 100) / item_price
 			print(item_row.discount_amount,"amount")
 			item_row.income_account = company_defaut_income_account
 			item_tax_template = frappe.db.get_value('Item Tax',{"parent":item.get('sap_code')}, 'item_tax_template')
