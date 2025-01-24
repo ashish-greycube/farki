@@ -143,8 +143,8 @@ class PetPoojaLog(Document):
 
 		print(sales_invoice_doc.items[0].discount_amount,"==== before")
 		sales_invoice_doc.run_method("onload")
-		sales_invoice_doc.run_method("set_other_charges")
 		sales_invoice_doc.run_method("set_missing_values")
+		sales_invoice_doc.run_method("set_other_charges")
 		sales_invoice_doc.run_method("calculate_taxes_and_totals")
 		
 		print(sales_invoice_doc.items[0].discount_amount,"====")
