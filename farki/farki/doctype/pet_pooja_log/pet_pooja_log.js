@@ -10,9 +10,16 @@ frappe.ui.form.on("Pet Pooja Log", {
 });
 
 let create_sales_invoice_from_pet_pooja_log = function (frm) {
-    frm.call("create_sales_invoice").then((r) => {
-        console.log(r.message);
-        frappe.open_in_new_tab = true;
-        frappe.set_route('Form', 'Sales Invoice', r.message);
-    });
+
+    frappe.call({
+        method: "farki.farki.doctype.pet_pooja_log.pet_pooja_log.create_sales_invoice",
+        args: {
+            docname: frm.doc.name
+        },
+        callback: function (r) {
+            console.log(r.message);
+            frappe.open_in_new_tab = true;
+            frappe.set_route('Form', 'Sales Invoice', r.message);
+        }
+    })
 }
