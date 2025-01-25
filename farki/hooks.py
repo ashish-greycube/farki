@@ -231,9 +231,7 @@ app_license = "mit"
 # Authentication and authorization
 # --------------------------------
 
-# auth_hooks = [
-# 	"farki.auth.validate"
-# ]
+auth_hooks = ["farki.petpooja_endpoint.validate_request"]
 
 # Automatically update python controller files with type annotations for this app.
 # export_python_type_annotations = True
@@ -242,6 +240,6 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
-default_log_clearing_doctypes = {
-	"Pet Pooja Log": 240,
-}
+# default_log_clearing_doctypes = {
+# 	"Pet Pooja Log": 240,
+# }

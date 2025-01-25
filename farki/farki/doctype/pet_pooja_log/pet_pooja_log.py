@@ -10,7 +10,9 @@ from erpnext import get_company_currency, get_default_company
 from frappe.model.meta import get_field_precision
 
 class PetPoojaLog(Document):
-	pass
+	def after_insert(self):
+		frappe.enqueue(create_sales_invoice, docname=self.name, queue="long",job_name="petpooja_si")
+		return
 	
 @frappe.whitelist()
 def create_sales_invoice(docname):
