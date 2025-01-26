@@ -25,7 +25,7 @@ def validate_request():
 		return
 	    # it is not use..so what to do 
 		# raise frappe.PermissionError
-	farki_settings = frappe.get_doc('Farki Settings', 'Farki Settings')
+	farki_settings = frappe.get_cached_doc('Farki Settings', 'Farki Settings')
 	farki_settings_secret=farki_settings.secret.encode("utf8")
 	payload_token=request_data.get('token').encode("utf8")
 	if payload_token and farki_settings_secret==payload_token:
@@ -44,7 +44,6 @@ def order_created(*args, **kwargs):
 		return Response(response=_("Event not supported"), status=HTTPStatus.BAD_REQUEST)
 
 
-@frappe.whitelist()
 def create_petpooja_log(request_data):
 	try:
 		if request_data and not isinstance(request_data, str):
@@ -53,7 +52,6 @@ def create_petpooja_log(request_data):
 		log.data = request_data
 		log.log_status = "Success"
 		log.insert(ignore_permissions=True)
-		frappe.db.commit()
-		return
+		# frappe.db.commit()
 	except Exception as e:
 			frappe.log_error(_("PetPooja log creation error"),str(e)+"\n"+"Raw request data: "+"\n"+request_data)			
