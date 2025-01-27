@@ -14,8 +14,8 @@ class PetPoojaSICreatinoError(frappe.ValidationError):
 
 class PetPoojaLog(Document):
 	def after_insert(self):
-		frappe.enqueue(create_sales_invoice, docname=self.name, queue="long",job_name="petpooja_si")
-		return
+		pass
+		# frappe.enqueue(create_sales_invoice, docname=self.name, queue="long",job_name="petpooja_si")
 	
 @frappe.whitelist()
 def create_sales_invoice(docname):
@@ -214,8 +214,9 @@ def create_sales_invoice(docname):
 				exists_si_doc = frappe.get_doc("Sales Invoice",exists_si[0].name)
 				if exists_si_doc.docstatus == 1:
 					exists_si_doc.cancel()
-					ppl_doc.invoice_status = "Cancelled"
-					ppl_doc.save(ignore_permissions=True)
+					invoice_status = "Cancelled"
+					frappe.db.set_value("Pet Pooja Log",docname,"invoice_status",invoice_status)
+					# ppl_doc.save(ignore_permissions=True)
 					return
 				else:
 					frappe.throw(_("Sales Invoice {0} is not submitted".format(exists_si[0].name)),exc=PetPoojaSICreatinoError)
@@ -245,25 +246,21 @@ def create_sales_invoice(docname):
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_id",sales_invoice_doc.name)
 		sales_invoice_doc.submit()
 
-		ppl_doc.invoice_status = "Created"
-		ppl_doc.invoice_error = ""
-		ppl_doc.save(ignore_permissions=True)
+		invoice_status = "Created"
+		frappe.db.set_value("Pet Pooja Log",docname,"invoice_status",invoice_status)
+		frappe.db.set_value("Pet Pooja Log",docname,"invoice_error","")
 		return sales_invoice_doc.name
 	
 	except Exception as e:
-		frappe.db.set_value("Pet Pooja Log",docname,"invoice_status","Error")
-		frappe.db.set_value("Pet Pooja Log",docname,"invoice_error",str(e))		
+		invoice_status="Error"
+	
 		if isinstance(e, frappe.UniqueValidationError):
-			frappe.db.set_value("Pet Pooja Log",docname,"invoice_status","Duplicate")
-			frappe.log_error(_("PetPooja SI creation error"),str(e)+"\n"+"PetPooja Log ID: "+docname)
-			# frappe.db.set_value("Pet Pooja Log",docname,"invoice_error",str(e))			
-		elif isinstance(e, PetPoojaSICreatinoError):
-			# frappe.db.set_value("Pet Pooja Log",docname,"invoice_status","Error")
-			frappe.log_error(_("PetPooja SI creation error"),str(e)+"\n"+"PetPooja Log ID: "+docname)
-			# frappe.db.set_value("Pet Pooja Log",docname,"invoice_error",str(e))		
-		else:
-			# do direct db changes
-			# frappe.log_error(_("PetPooja SI creation error"),str(e)+"\n"+"PetPooja Log ID: "+docname)			
-			raise e
+			invoice_status="Duplicate"
+
+		frappe.db.rollback()
+		traceback = frappe.get_traceback(with_context=True)
+		frappe.db.set_value("Pet Pooja Log",docname,"invoice_status",invoice_status)
+		frappe.db.set_value("Pet Pooja Log",docname,"invoice_error",str(e))
+		frappe.db.set_value("Pet Pooja Log",docname,"traceback",str(traceback))
 
 		

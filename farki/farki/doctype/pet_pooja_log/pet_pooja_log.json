@@ -12,7 +12,6 @@
   "log_status",
   "time_elapsed",
   "data",
-  "traceback",
   "column_break_tkth5",
   "url",
   "method",
@@ -23,13 +22,13 @@
   "invoice_status",
   "invoice_error",
   "column_break_dfka",
-  "invoice_id"
+  "invoice_id",
+  "traceback"
  ],
  "fields": [
   {
    "fieldname": "user",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "User",
    "options": "User",
    "read_only": 1
@@ -58,7 +57,6 @@
    "fieldname": "traceback",
    "fieldtype": "Code",
    "label": "Traceback",
-   "options": "JSON",
    "read_only": 1
   },
   {
@@ -74,16 +72,12 @@
   {
    "fieldname": "method",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Method",
    "read_only": 1
   },
   {
    "fieldname": "endpoint",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Endpoint",
    "read_only": 1
   },
@@ -117,6 +111,8 @@
    "default": "Not processed",
    "fieldname": "invoice_status",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Invoice Status",
    "options": "Not processed\nCreated\nCancelled\nDuplicate\nError"
   },
@@ -128,6 +124,7 @@
   {
    "fieldname": "invoice_id",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Erpnext Sales Invoice ID"
   },
   {
@@ -143,7 +140,7 @@
    "link_fieldname": "custom_pet_pooja_log_id"
   }
  ],
- "modified": "2025-01-24 16:17:49.224588",
+ "modified": "2025-01-27 13:25:58.643092",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Pet Pooja Log",
