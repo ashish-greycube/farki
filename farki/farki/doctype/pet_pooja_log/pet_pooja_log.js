@@ -3,7 +3,9 @@
 
 frappe.ui.form.on("Pet Pooja Log", {
 	refresh(frm) {
-        if (frm.is_new() == undefined) {
+        console.log(frm.doc.invoice_status)
+        if (!frm.is_new() && (frm.doc.invoice_status == "Not processed" | frm.doc.invoice_status == "Error")) {
+            console.log("---")
             frm.add_custom_button(__('Create SI'), () => create_sales_invoice_from_pet_pooja_log(frm));
         }
 	},

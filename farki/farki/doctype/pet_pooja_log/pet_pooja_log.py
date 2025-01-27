@@ -4,7 +4,7 @@
 import frappe
 import erpnext
 from frappe import _
-from frappe.utils import getdate, cstr, add_to_date, get_time, flt, cint, get_link_to_form
+from frappe.utils import getdate, cstr, add_to_date, get_time, flt, cint, get_link_to_form, get_url_to_form
 from frappe.model.document import Document
 from erpnext import get_company_currency, get_default_company
 from frappe.model.meta import get_field_precision
@@ -93,14 +93,14 @@ def create_sales_invoice(docname):
 								mode_of_payment = mop.erpnext_mode_of_payment
 								break
 							else :
-								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(custom_payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
 						else :
 							mode_of_payment_found = False
 					if mode_of_payment_found == False:
-						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
-				else :
-					frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Farki Settings {0}".format(get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
-				if len(cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping) > 0:
+						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(custom_payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+				# else :
+				# 	frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Farki Settings {0}".format(get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+				elif len(cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping) > 0:
 					for row in cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping:
 						if row.pp_mode_of_payment == custom_payment_type:
 							mode_of_payment_found = True
@@ -109,11 +109,11 @@ def create_sales_invoice(docname):
 								mode_of_payment = row.erpnext_mode_of_payment
 								break
 							else :
-								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(custom_payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
 						else :
 							mode_of_payment_found = False
 					if mode_of_payment_found == False:
-						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(frappe.bold(payment_type)),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
+						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(frappe.bold(custom_payment_type)),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
 				else :
 					frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Cost Center {0}".format(get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
 
@@ -131,7 +131,7 @@ def create_sales_invoice(docname):
 			if zomato_customer_price_list:
 				sales_invoice_doc.selling_price_list = zomato_customer_price_list
 			else :
-				frappe.throw(_("Please set default price list for zomato customer in {0}".format(get_link_to_form("CUstomer",zomato_customer))),exc=PetPoojaSICreatinoError)
+				frappe.throw(_("Please set default price list for zomato customer in {0}".format(get_link_to_form("Customer",zomato_customer))),exc=PetPoojaSICreatinoError)
 		elif order_from == 'Swiggy':
 			sales_invoice_doc.customer = swiggy_customer
 			if swiggy_customer_price_list:
@@ -180,6 +180,7 @@ def create_sales_invoice(docname):
 			print(item_price,"====item_price",sales_invoice_doc.selling_price_list)
 			if order_details.get('status') == 'Complimentary':
 				item_row.rate = 0
+				item_row.discount_percentage = 100
 			else:
 				item_rate_as_per_selling_price_list=item_price
 				pp_item_discount=flt(item.get('discount'),discount_precision)
@@ -190,7 +191,7 @@ def create_sales_invoice(docname):
 					item_row.discount_percentage = 100 * flt(item_row.discount_amount,default_float_precision) / flt(item_rate_as_per_selling_price_list)
 				else:
 					item_row.rate = item_rate_as_per_selling_price_list
-			print(item.get('discount'),"====item.get('discount')",type(item.get('discount')))
+			print(item.get('discount'),"====item.get('discount')",type(item.get('discount')),item_row.rate)
 			item_row.cost_center = cost_center_doc.name
 			item_row.warehouse = cost_center_doc.custom_warehouse
 			print(item_row.discount_amount,"amount")
@@ -234,21 +235,22 @@ def create_sales_invoice(docname):
 		sales_invoice_doc.custom_pp_unique_order_id = unique_id
 		# sales_invoice_doc.discount_amount = order_details.get('discount_total')
 
-		print(sales_invoice_doc.items[0].discount_amount,"==== before")
+		print(sales_invoice_doc.items[0].discount_amount,"==== before",sales_invoice_doc.items[0].rate,"rate")
 		sales_invoice_doc.run_method("set_missing_values")
 		sales_invoice_doc.run_method("set_other_charges")
 		sales_invoice_doc.run_method("calculate_taxes_and_totals")
-		
-		print(sales_invoice_doc.items[0].discount_amount,"====")
+		print(sales_invoice_doc.items[0].discount_amount,"====",sales_invoice_doc.items[0].rate,"rate")
 		print(sales_invoice_doc.rounded_total,"====")
 		payments_row.amount = sales_invoice_doc.rounded_total
 		sales_invoice_doc.save(ignore_permissions=True)
-		frappe.db.set_value("Pet Pooja Log",docname,"invoice_id",sales_invoice_doc.name)
+		si_doc_url = get_url_to_form("Sales Invoice",sales_invoice_doc.name)
+		frappe.db.set_value("Pet Pooja Log",docname,"invoice_id",si_doc_url)
 		sales_invoice_doc.submit()
 
 		invoice_status = "Created"
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_status",invoice_status)
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_error","")
+		frappe.db.set_value("Pet Pooja Log",docname,"traceback","")
 		return sales_invoice_doc.name
 	
 	except Exception as e:

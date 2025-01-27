@@ -125,7 +125,8 @@
    "fieldname": "invoice_id",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Erpnext Sales Invoice ID"
+   "label": "Erpnext Sales Invoice ID",
+   "options": "URL"
   },
   {
    "fieldname": "column_break_dfka",
@@ -140,7 +141,7 @@
    "link_fieldname": "custom_pet_pooja_log_id"
   }
  ],
- "modified": "2025-01-27 13:25:58.643092",
+ "modified": "2025-01-27 15:36:44.346589",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Pet Pooja Log",
