@@ -15,8 +15,6 @@
   "default_swiggy_customer",
   "column_break_kjeh",
   "default_zomato_customer",
-  "mode_of_payment_section",
-  "phone_pe",
   "general_defaults_tab",
   "place_of_supply",
   "pp_vs_erpnext_mode_of_payment_mapping"
@@ -70,17 +68,6 @@
    "label": "Invoice Defaults"
   },
   {
-   "fieldname": "mode_of_payment_section",
-   "fieldtype": "Section Break",
-   "label": "Mode Of Payments"
-  },
-  {
-   "fieldname": "phone_pe",
-   "fieldtype": "Link",
-   "label": "Phone Pe",
-   "options": "Mode of Payment"
-  },
-  {
    "fieldname": "customer_defaults_section",
    "fieldtype": "Section Break",
    "label": "Customer Defaults"
@@ -111,7 +98,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-17 11:23:11.598547",
+ "modified": "2025-01-28 10:19:37.322465",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Farki Settings",
