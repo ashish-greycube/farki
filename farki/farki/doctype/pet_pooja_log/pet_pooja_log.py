@@ -139,7 +139,7 @@ def create_sales_invoice(docname):
 			else :
 				frappe.throw(_("Please set default price list for swiggy customer in {0}".format(get_link_to_form("Customer",swiggy_customer))),exc=PetPoojaSICreatinoError)
 		
-		sales_invoice_doc.custom_pp_mode_of_payment = payment_type
+		sales_invoice_doc.custom_pp_mode_of_payment = custom_payment_type if payment_type=="Other" else payment_type
 		sales_invoice_doc.territory = cost_center_doc.custom_territory
 		sales_invoice_doc.update_stock = 1
 		sales_invoice_doc.set_warehouse = cost_center_doc.custom_warehouse
