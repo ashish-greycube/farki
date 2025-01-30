@@ -21,7 +21,6 @@ class PetPoojaLog(Document):
 @frappe.whitelist()
 def create_sales_invoice(docname):
 	try:
-		print("create_sales_invoice")
 		ppl_doc = frappe.get_doc("Pet Pooja Log",docname)
 		data = frappe.parse_json(ppl_doc.data)
 		properties = data.get('properties')
@@ -29,15 +28,17 @@ def create_sales_invoice(docname):
 		rest_id = restaurant.get('restID')
 		
 		cost_center = frappe.db.get_all('Cost Center', filters={'custom_petpooja_restaurant_id':rest_id }, fields=['name'])
-		cost_center_doc = frappe.get_doc('Cost Center', cost_center[0].name)
-		farki_settings_doc = frappe.get_doc('Farki Settings')
+		if not cost_center:
+			frappe.throw(_("No Cost Center found for Restaurant ID {0}".format(frappe.bold(rest_id))), exc=PetPoojaSICreatinoError)
+		cost_center_doc = frappe.get_cached_doc('Cost Center', cost_center[0].name)
+		farki_settings_doc = frappe.get_cached_doc('Farki Settings')
+		zomato_customer = farki_settings_doc.default_zomato_customer
+		swiggy_customer = farki_settings_doc.default_swiggy_customer		
 		order_details = properties.get('Order')
 		create_date_time = frappe.utils.get_datetime(order_details.get('created_on'))
-		order_from = order_details.get('order_from')
 
 		default_currency_precision = cint(frappe.db.get_default("currency_precision")) or 2
 		default_float_precision = cint(frappe.db.get_default("float_precision")) or 2
-		print(default_currency_precision,"=====")
 
 		# create SI
 		sales_invoice_doc = frappe.new_doc("Sales Invoice")
@@ -48,22 +49,19 @@ def create_sales_invoice(docname):
 		sales_invoice_doc.due_date = create_date_time.date()
 		sales_invoice_doc.custom_pet_pooja_order_id = order_details.get('orderID')
 
-		zomato_customer = farki_settings_doc.default_zomato_customer
-		swiggy_customer = farki_settings_doc.default_swiggy_customer
-
 		sales_taxes_and_charges = frappe.db.get_value('Sales Taxes and Charges Template',{"is_default":1}, 'name')
-		sales_taxes_and_charges_doc = frappe.get_doc('Sales Taxes and Charges Template', sales_taxes_and_charges)
-		payment_type = order_details.get('payment_type')
-		custom_payment_type = order_details.get('custom_payment_type')
-		mode_of_payment = ''
+		sales_taxes_and_charges_doc = frappe.get_cached_doc('Sales Taxes and Charges Template', sales_taxes_and_charges)
 		for row in sales_taxes_and_charges_doc.taxes:
 			sales_invoice_doc.append('taxes', row)
-		payments_row = sales_invoice_doc.append('payments', {})
 
+		payment_type = order_details.get('payment_type')
+		order_from = order_details.get('order_from')
+		custom_payment_type = order_details.get('custom_payment_type')
+		mode_of_payment = ''
+		payments_row = sales_invoice_doc.append('payments', {})
 		mode_of_payment_found = False
 		pl_found = False
 		si_customer = None
-
 		# order from POS and fill Payments child table
 		if order_from == 'POS':
 			si_customer = cost_center_doc.custom_default_b2c_customer
