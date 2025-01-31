@@ -47,6 +47,7 @@ def create_sales_invoice(docname):
 		sales_invoice_doc.posting_date = create_date_time.date()
 		sales_invoice_doc.posting_time = create_date_time.time()
 		sales_invoice_doc.due_date = create_date_time.date()
+		sales_invoice_doc.custom_business_date = create_date_time.date()
 		sales_invoice_doc.custom_pet_pooja_order_id = order_details.get('orderID')
 
 		sales_taxes_and_charges = frappe.db.get_value('Sales Taxes and Charges Template',{"is_default":1}, 'name')
