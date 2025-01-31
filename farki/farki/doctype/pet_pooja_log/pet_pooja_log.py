@@ -308,7 +308,6 @@ def create_sales_invoice(docname):
 
 		invoice_status = "Created"
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_status",invoice_status)
-		frappe.db.set_value("Pet Pooja Log",docname,"business_date",sales_invoice_doc.posting_date)
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_error","")
 		frappe.db.set_value("Pet Pooja Log",docname,"traceback","")
 		return sales_invoice_doc.name

@@ -8,7 +8,7 @@ from typing import Optional, Tuple
 import frappe
 from frappe import _
 from werkzeug.wrappers import Response
-
+from frappe.utils import getdate, cstr, add_to_date, get_time
 # from woocommerce_fusion.tasks.sync_sales_orders import run_sales_order_sync
 # from woocommerce_fusion.woocommerce.woocommerce_api import (
 # 	WC_RESOURCE_DELIMITER,
@@ -54,6 +54,7 @@ def create_petpooja_log(request_data):
 		log.branch=data.get('properties').get('Restaurant').get('res_name')
 		log.order_id=data.get('properties').get('Order').get('orderID')
 		log.pos_created_on=data.get('properties').get('Order').get('created_on')
+		log.business_date=  add_to_date(getdate(log.pos_created_on), days=-1) if get_time('04:30:01') > get_time(log.pos_created_on) else getdate(log.pos_created_on)
 		log.log_status = "Success"
 		log.insert(ignore_permissions=True)
 		# frappe.db.commit()

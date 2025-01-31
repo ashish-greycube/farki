@@ -162,6 +162,7 @@
    "label": "POS Created On"
   },
   {
+   "description": "business date is previous date when 'POS Created On' is between 12 to 4:30 AM",
    "fieldname": "business_date",
    "fieldtype": "Date",
    "label": "Business Date"
@@ -175,7 +176,7 @@
    "link_fieldname": "custom_pet_pooja_log_id"
   }
  ],
- "modified": "2025-01-31 14:39:06.200626",
+ "modified": "2025-01-31 15:34:20.820204",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Pet Pooja Log",
