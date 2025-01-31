@@ -51,7 +51,10 @@ def create_petpooja_log(request_data):
 		log = frappe.new_doc('Pet Pooja Log')
 		log.data = request_data
 		data=frappe.parse_json(request_data)
-		log.branch=data.get('properties').get('Restaurant').get('res_name')
+		log.rest_id=data.get('properties').get('Restaurant').get('restID')
+		branch=frappe.db.get_value('Cost Center', {'custom_petpooja_restaurant_id': log.rest_id}, ['name'])
+		if branch:
+			log.branch=branch
 		log.order_id=data.get('properties').get('Order').get('orderID')
 		log.pos_created_on=data.get('properties').get('Order').get('created_on')
 		log.business_date=  add_to_date(getdate(log.pos_created_on), days=-1) if get_time('04:30:01') > get_time(log.pos_created_on) else getdate(log.pos_created_on)

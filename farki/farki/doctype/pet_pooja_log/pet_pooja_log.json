@@ -20,6 +20,7 @@
   "error",
   "section_break_ujda",
   "branch",
+  "rest_id",
   "order_id",
   "column_break_ntuc",
   "pos_created_on",
@@ -144,8 +145,9 @@
   },
   {
    "fieldname": "branch",
-   "fieldtype": "Data",
-   "label": "Branch"
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Cost Center"
   },
   {
    "fieldname": "order_id",
@@ -166,6 +168,11 @@
    "fieldname": "business_date",
    "fieldtype": "Date",
    "label": "Business Date"
+  },
+  {
+   "fieldname": "rest_id",
+   "fieldtype": "Data",
+   "label": "Rest ID"
   }
  ],
  "in_create": 1,
@@ -176,7 +183,7 @@
    "link_fieldname": "custom_pet_pooja_log_id"
   }
  ],
- "modified": "2025-01-31 15:34:20.820204",
+ "modified": "2025-01-31 16:38:02.384615",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Pet Pooja Log",
