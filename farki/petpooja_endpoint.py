@@ -50,6 +50,10 @@ def create_petpooja_log(request_data):
 			request_data = json.dumps(request_data, sort_keys=True, indent=4)
 		log = frappe.new_doc('Pet Pooja Log')
 		log.data = request_data
+		data=frappe.parse_json(request_data)
+		log.branch=data.get('properties').get('Restaurant').get('res_name')
+		log.order_id=data.get('properties').get('Order').get('orderID')
+		log.pos_created_on=data.get('properties').get('Order').get('created_on')
 		log.log_status = "Success"
 		log.insert(ignore_permissions=True)
 		# frappe.db.commit()
