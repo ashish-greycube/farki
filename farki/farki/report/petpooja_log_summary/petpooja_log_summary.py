@@ -33,12 +33,6 @@ def get_columns(filters):
 			"label": _("Invoice Status"),
 			"width": 200
 		},
-		# {
-		# 	"fieldname": "amount_total",
-		# 	"fieldtype": "Float",
-		# 	"label": _("Amount Total"),
-		# 	"width": 110
-		# }
 	]
 
 	return columns
@@ -88,6 +82,8 @@ def make_report(data, filters, columns):
 		for x in range(numdays)
 	]
 
+	dates.append(filters.get("from_date"))
+
 	for dt in dates:
 		columns.append(
 				{
@@ -99,9 +95,9 @@ def make_report(data, filters, columns):
 			)
 		
 	columns.append({
-		"fieldname": "amount_total",
+		"fieldname": "total_invoice",
 		"fieldtype": "Int",
-		"label": _("Amount Total"),
+		"label": _("Invoice Total"),
 		"width": 110,
 	}),
 
@@ -116,13 +112,13 @@ def make_report(data, filters, columns):
 			"invoice_status": invoice_status,
 		}
 
-		total_amount = 0
+		total_invoice = 0
 		for dt in dates:
 			row[dt] = sum(
 				flt(r["count_log"]) for r in _rows if cstr(r["business_date"]).startswith(dt)
 			)
-			total_amount = total_amount + row[dt]
-			row["amount_total"] = total_amount
+			total_invoice = total_invoice + row[dt]
+			row["total_invoice"] = total_invoice
 
 		result.append(row)
 			

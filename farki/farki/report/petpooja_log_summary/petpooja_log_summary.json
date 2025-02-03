@@ -1,5 +1,5 @@
 {
- "add_total_row": 0,
+ "add_total_row": 1,
  "columns": [],
  "creation": "2025-02-03 09:32:48.588606",
  "disabled": 0,
@@ -9,7 +9,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-02-03 12:18:20.326518",
+ "modified": "2025-02-03 16:41:14.595248",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "PetPooja Log Summary",
