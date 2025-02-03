@@ -70,7 +70,7 @@ def get_data(filters, columns):
 		Where {0}""".format(conditions),filters,as_dict=1,debug=1)
 
 	result = make_report(data, filters, columns)
-	print(result)
+	# print(result)
 
 	return result
 
@@ -88,6 +88,23 @@ def make_report(data, filters, columns):
 		for x in range(numdays)
 	]
 
+	for dt in dates:
+		columns.append(
+				{
+					"fieldname": dt,
+					"label": dt,
+					"fieldtype": "Data",
+					"width": 150,
+				}
+			)
+		
+	columns.append({
+		"fieldname": "amount_total",
+		"fieldtype": "Int",
+		"label": _("Amount Total"),
+		"width": 110,
+	}),
+
 	grouping_key = lambda o: (o["branch"], o["invoice_status"])
 	for (branch, invoice_status), rows in groupby(
 		sorted(data, key=grouping_key), key=grouping_key
@@ -99,35 +116,14 @@ def make_report(data, filters, columns):
 			"invoice_status": invoice_status,
 		}
 
+		total_amount = 0
 		for dt in dates:
-
-			columns.append(
-                    {
-                        "fieldname": dt,
-                        "label": dt,
-                        "fieldtype": "Data",
-                        "width": 150,
-                    }
-                )
-
 			row[dt] = sum(
 				flt(r["count_log"]) for r in _rows if cstr(r["business_date"]).startswith(dt)
 			)
+			total_amount = total_amount + row[dt]
+			row["amount_total"] = total_amount
 
 		result.append(row)
-
-		columns.append({
-			"fieldname": "amount_total",
-			"fieldtype": "Int",
-			"label": _("Amount Total"),
-			"width": 110,
-		}),
-
-		total_amount = 0
-		for r in result:
-			for dt in dates:
-				total_amount = total_amount + cint(r[dt])
-			
-			row.update({"amount_total" : total_amount})
 			
 	return result
