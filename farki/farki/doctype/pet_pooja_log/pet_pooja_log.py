@@ -15,8 +15,8 @@ class PetPoojaSICreatinoError(frappe.ValidationError):
 
 class PetPoojaLog(Document):
 	def after_insert(self):
-		pass
-		# frappe.enqueue(create_sales_invoice, docname=self.name, queue="long",job_name="petpooja_si")
+		# pass
+		frappe.enqueue(create_sales_invoice, docname=self.name, queue="long",job_name="petpooja_si")
 	
 @frappe.whitelist()
 def create_sales_invoice(docname):
