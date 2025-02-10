@@ -231,15 +231,18 @@ def create_sales_invoice(docname):
 			else :
 				item_row.item_code = item_code
 			item_row.qty = item.get('quantity')
+			item_uom = frappe.db.get_value('Item', item_code, 'stock_uom')
 			# get item price based on customer and price list
 			pl_args = frappe._dict({
 				'customer':si_customer,
 				'price_list':sales_invoice_doc.selling_price_list,
 				'qty':1,
-				'uom':frappe.db.get_value('Item', item_code, 'stock_uom')
+				'uom':item_uom
 			})
 			item_price = get_price_list_rate_for(pl_args,item_code)
 			print(item_price,"====item_price",sales_invoice_doc.selling_price_list)
+			if item_price == None:
+				frappe.throw(_("Price not found for item {0} and uom {1} in price list {2}".format(frappe.bold(item_code),frappe.bold(item_uom),frappe.bold(sales_invoice_doc.selling_price_list))),exc=PetPoojaSICreatinoError)
 			# Compliementary case
 			if order_details.get('status') == 'Complimentary':
 				item_row.rate = 0
