@@ -83,68 +83,52 @@ def create_sales_invoice(docname):
 			else :
 				frappe.throw(_("Please set customer and appropriate price list in Cost Center {0}".format(get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
 			sales_invoice_doc.is_pos = 1
-		
-			if payment_type != "Other":
-				if len(cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping) > 0:
-					for row in cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping:
-						if row.pp_mode_of_payment == payment_type:
-							mode_of_payment_found = True
-							if row.erpnext_mode_of_payment:
-								payments_row.mode_of_payment = row.erpnext_mode_of_payment
-								mode_of_payment = row.erpnext_mode_of_payment
-								break
-							else :
-								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(payment_type),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
-						else :
-							mode_of_payment_found = False
-					if mode_of_payment_found == False:
-						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(payment_type),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
-				else :
-					frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Cost Center {0}".format(get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
-			elif payment_type == "Other":
-				if len(farki_settings_doc.pp_vs_erpnext_mode_of_payment_mapping) > 0:
-					for mop in farki_settings_doc.pp_vs_erpnext_mode_of_payment_mapping:
-						if mop.pp_mode_of_payment == custom_payment_type:
-							mode_of_payment_found = True
-							if mop.erpnext_mode_of_payment:
-								payments_row.mode_of_payment = mop.erpnext_mode_of_payment
-								mode_of_payment = mop.erpnext_mode_of_payment
-								break
-							else :
-								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(custom_payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
-						else :
-							mode_of_payment_found = False
-					if mode_of_payment_found == False:
-						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(custom_payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
-				
-				elif len(cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping) > 0:
-					for row in cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping:
-						if row.pp_mode_of_payment == custom_payment_type:
-							mode_of_payment_found = True
-							if row.erpnext_mode_of_payment:
-								payments_row.mode_of_payment = row.erpnext_mode_of_payment
-								mode_of_payment = row.erpnext_mode_of_payment
-								break
-							else :
-								frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(custom_payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
-						else :
-							mode_of_payment_found = False
-					if mode_of_payment_found == False:
-						frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(frappe.bold(custom_payment_type)),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
 
-				else :
-					frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Cost Center {0} or in Farki Settings {1}".format(get_link_to_form("Cost Center",cost_center_doc.name)),get_link_to_form("Farki Settings",farki_settings_doc.name)),exc=PetPoojaSICreatinoError)
+			# payments_row = sales_invoice_doc.append('payments', {})
+
+			if payment_type not in ["Other","Part Payment"]:
+				# payments_row = sales_invoice_doc.append('payments', {})
+				mode_of_payment = get_mode_of_payment_from_cost_center(cost_center_doc.name, payment_type)
+				payments_row.mode_of_payment = mode_of_payment
+
+			elif payment_type == "Other":
+				# payments_row = sales_invoice_doc.append('payments', {})
+				mode_of_payment = get_mode_of_payment_from_farki_settings(custom_payment_type)
+				
+				if not mode_of_payment:
+					mode_of_payment = get_mode_of_payment_from_cost_center(cost_center_doc.name, custom_payment_type)
+					
+				payments_row.mode_of_payment = mode_of_payment
+			
+			# Part Payment Logic
+			if payment_type == "Part Payment":
+				part_payment_details = order_details.get("part_payments")
+				if len(part_payment_details) > 0:
+					for i, pp in enumerate(part_payment_details):
+						if i == 0:
+							pass
+						else :
+							payments_row = sales_invoice_doc.append('payments', {})
+							
+						if pp.get('payment_type') != "Others":
+							mode_of_payment = get_mode_of_payment_from_cost_center(cost_center_doc.name, pp.get('payment_type'))
+							payments_row.mode_of_payment = mode_of_payment
+						elif pp.get('payment_type') == "Others":
+							mode_of_payment = get_mode_of_payment_from_farki_settings(pp.get('custome_payment_type'))
+							if not mode_of_payment:
+								mode_of_payment = get_mode_of_payment_from_cost_center(cost_center_doc.name, pp.get('custome_payment_type'))
+							payments_row.mode_of_payment = mode_of_payment
+						payments_row.amount = pp.get('amount')
 
 			# POS Business date logic
-			date_time_limit = frappe.db.get_value('Mode of Payment', mode_of_payment, 'custom_consider_in_previous_business_date_till')
-			if date_time_limit:
-				if create_date_time.time() < get_time(date_time_limit):
-					sales_invoice_doc.posting_date = add_to_date(create_date_time.date(), days=-1)
-					sales_invoice_doc.posting_time = get_time("23:59:59")
-					sales_invoice_doc.due_date = add_to_date(create_date_time.date(), days=-1)
-					sales_invoice_doc.custom_business_date = add_to_date(create_date_time.date(), days=-1)
-
-			payments_row.amount = sales_invoice_doc.rounded_total
+			if payment_type != "Part Payment":
+				date_time_limit = frappe.db.get_value('Mode of Payment', mode_of_payment, 'custom_consider_in_previous_business_date_till')
+				if date_time_limit:
+					if create_date_time.time() < get_time(date_time_limit):
+						sales_invoice_doc.posting_date = add_to_date(create_date_time.date(), days=-1)
+						sales_invoice_doc.posting_time = get_time("23:59:59")
+						sales_invoice_doc.due_date = add_to_date(create_date_time.date(), days=-1)
+						sales_invoice_doc.custom_business_date = add_to_date(create_date_time.date(), days=-1)
 
 		# Zomato Swiggy price list Logic
 		elif order_from == 'Zomato':
@@ -304,7 +288,8 @@ def create_sales_invoice(docname):
 		sales_invoice_doc.run_method("calculate_taxes_and_totals")
 
 		print(sales_invoice_doc.rounded_total,"====")
-		payments_row.amount = sales_invoice_doc.rounded_total
+		if payment_type != "Part Payment":
+			payments_row.amount = sales_invoice_doc.rounded_total
 		sales_invoice_doc.save(ignore_permissions=True)
 		si_doc_url = get_url_to_form("Sales Invoice",sales_invoice_doc.name)
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_id",si_doc_url)
@@ -328,4 +313,46 @@ def create_sales_invoice(docname):
 		frappe.db.set_value("Pet Pooja Log",docname,"invoice_error",str(e))
 		frappe.db.set_value("Pet Pooja Log",docname,"traceback",str(traceback))
 
-		
+def get_mode_of_payment_from_cost_center(cost_center, payment_type):
+	mode_of_payment_found = False
+	cost_center_doc = frappe.get_cached_doc('Cost Center', cost_center)
+	if len(cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping) > 0:
+		for row in cost_center_doc.custom_pp_vs_erpnext_mode_of_payment_mapping:
+			if row.pp_mode_of_payment == payment_type:
+				mode_of_payment_found = True
+				if row.erpnext_mode_of_payment:
+					# payments_row.mode_of_payment = row.erpnext_mode_of_payment
+					mode_of_payment = row.erpnext_mode_of_payment
+					break
+				else :
+					frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(payment_type),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
+			else :
+				mode_of_payment_found = False
+		if mode_of_payment_found == False:
+			frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Cost Center {1}".format(frappe.bold(payment_type),get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
+	else :
+		frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Cost Center {0}".format(get_link_to_form("Cost Center",cost_center_doc.name))),exc=PetPoojaSICreatinoError)
+	
+	return mode_of_payment
+
+def get_mode_of_payment_from_farki_settings(payment_type):
+	mode_of_payment_found = False
+	farki_settings_doc = frappe.get_cached_doc('Farki Settings')
+	if len(farki_settings_doc.pp_vs_erpnext_mode_of_payment_mapping) > 0:
+		for mop in farki_settings_doc.pp_vs_erpnext_mode_of_payment_mapping:
+			if mop.pp_mode_of_payment == payment_type:
+				mode_of_payment_found = True
+				if mop.erpnext_mode_of_payment:
+					# payments_row.mode_of_payment = mop.erpnext_mode_of_payment
+					mode_of_payment = mop.erpnext_mode_of_payment
+					break
+				else :
+					frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+			else :
+				mode_of_payment_found = False
+		if mode_of_payment_found == False:
+			frappe.throw(_("Please set appropriate Mode of Payment for Payment type {0} in Farki Settings {1}".format(frappe.bold(payment_type),get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+	else :
+		frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Farki Settings {0}".format(get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
+	
+	return mode_of_payment
