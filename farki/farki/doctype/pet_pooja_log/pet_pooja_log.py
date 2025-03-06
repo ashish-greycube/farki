@@ -9,7 +9,7 @@ from frappe.model.document import Document
 from erpnext import get_company_currency, get_default_company
 from frappe.model.meta import get_field_precision
 from erpnext.stock.get_item_details import get_price_list_rate_for
-
+import time
 class PetPoojaSICreatinoError(frappe.ValidationError):
 	pass
 
@@ -356,3 +356,18 @@ def get_mode_of_payment_from_farki_settings(payment_type):
 		frappe.throw(_("Please set appropriate Payment type and Mode of Payment in Farki Settings {0}".format(get_link_to_form("Farki Settings",farki_settings_doc.name))),exc=PetPoojaSICreatinoError)
 	
 	return mode_of_payment
+
+
+
+def create_duplicate_logs():
+	# get all pending logs
+	pending_logs = frappe.get_all("Pet Pooja Log", filters={"name": ["in",["nivp9kc7s6","4mmjp9vqqa"]]}, fields=["name"])
+	for log in pending_logs:
+		time.sleep(0.05)
+		try:
+			log_doc=frappe.get_doc("Pet Pooja Log",log.name)
+			log_new=frappe.copy_doc(log_doc)
+			log_new.save(ignore_permissions=True)
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), _("Error in creating duplicate logs"))
+	return "Done"

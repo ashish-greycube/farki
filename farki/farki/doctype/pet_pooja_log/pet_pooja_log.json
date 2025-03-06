@@ -64,6 +64,7 @@
    "fieldname": "traceback",
    "fieldtype": "Code",
    "label": "Traceback",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -121,18 +122,21 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Invoice Status",
+   "no_copy": 1,
    "options": "Not processed\nCreated\nCancelled\nDuplicate\nError"
   },
   {
    "fieldname": "invoice_error",
    "fieldtype": "Code",
-   "label": "Invoice Error"
+   "label": "Invoice Error",
+   "no_copy": 1
   },
   {
    "fieldname": "invoice_id",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Erpnext Sales Invoice ID",
+   "no_copy": 1,
    "options": "URL"
   },
   {
@@ -183,7 +187,7 @@
    "link_fieldname": "custom_pet_pooja_log_id"
   }
  ],
- "modified": "2025-01-31 16:38:02.384615",
+ "modified": "2025-03-06 11:45:23.703626",
  "modified_by": "Administrator",
  "module": "Farki",
  "name": "Pet Pooja Log",
